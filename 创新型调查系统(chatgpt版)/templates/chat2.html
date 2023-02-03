@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../static/img/沟通.svg" type="image/x-icon"/>
+    <title>Chat</title>
+</head>
+
+<script src="../static/JavaScrpit/jquery-3.5.1.min.js"></script>
+<script>
+    function showtalk(){
+        let getreviewHeight = $('.talk_b').prop("scrollHeight");
+        $('.talk_b').animate({scrollTop: getreviewHeight}, 50);
+    }
+    $(document).keydown(function(event){
+        if(event.keyCode==13){
+            document.getElementById("click").click();
+        }
+    });
+    $(function(){
+        let $mesType = $('#who'),
+        $text = $('#word'),
+        $send = $('#click'),
+        $msg = $('#words');
+
+        $send.click(function(){
+            
+            let StextCon = $text.val()
+            let SmesType = $mesType.val()
+            let SmsgCon = '';
+
+            if (SmesType == '0'){
+                SmsgCon =  '<div class="utalk"><span>'+ StextCon +'</span></div>'
+            }
+            else if (SmesType == '1'){
+                SmsgCon = '<div class="gtalk"><span>'+ StextCon +'</span></div>'
+            }
+            $msg.html($msg.html() + SmsgCon)
+
+            $.ajax({
+                url:"http://127.0.0.1:5000/cht",
+                type:"post",
+                dataType:"json",
+
+                data:JSON.stringify({
+                    word: $("#word").val(),
+                    who: $("#who").val()
+                }),
+                success:function (data){
+                    data.who = 1
+                    console.log(data)
+                    console.log(data.word)
+                    SmsgCon = '<div class="gtalk"><span>'+ data.word +'</span></div>'
+                    $msg.html($msg.html() + SmsgCon)
+                    data.who = 0
+                },
+                error:function (){
+                    alert("请再试一次")
+                    console.log("****1111*")
+                }
+            })
+            
+            $text.val('')
+        })
+    })
+</script>
+
+
+<body class="image">
+    <div class="chat">
+        <span id="n" value="0"></span>
+        <span id="title" class="title1">Chat</span>
+        <div class="talk_b" id="words" ref="talk_b">
+                <div class="utalk"><span>你好</span></div>
+                <div class="gtalk"><span>你好</span></div>
+        </div>    
+        <div class="send">
+            <select  type="hidden" name="" id="who" class="wsend">
+                <option value="0">用户</option>
+                <option value="1">GPT</option>
+                <form action="">
+                    <textarea onkeydown="if (event.keyCode === 13) event.preventDefault();" placeholder="输入描述" rows="3" class="text" id="word" required="required"></textarea>
+                    <input type="button" value="发送"  class="btn" id="click" onclick="showtalk()">    
+                </form>
+                </select>
+        </div>
+    </div>
+</body>
+</html>

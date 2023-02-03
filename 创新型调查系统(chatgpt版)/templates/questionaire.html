@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css" type="text/css" />
+    <link rel="shortcut icon" href="../static/img/沟通.svg" type="image/x-icon"/>
+    <title>Chat</title>
+</head>
+
+<script src="../static/JavaScrpit/jquery-3.5.1.min.js"></script>
+<script>
+    function showtalk(){
+        var getreviewHeight = $('.talk_b').prop("scrollHeight"); 
+        $('.talk_b').animate({scrollTop: getreviewHeight}, 50);
+    }
+    function end(){
+        alert('问卷收集完毕，按下确定键5秒后将返回主界面');
+        $("#status3").val(3),
+        $.ajax({
+            url:"http://127.0.0.1:5000/qst",
+            type:"post",
+            dataType:"json",
+            
+            data:JSON.stringify({
+                word: $("#word").val(),
+                who: $("#who").val(),
+                status: $("#status3").val()
+            }),
+            success:function (data){
+                data.who = 1
+                console.log(data)
+                console.log(data.word)
+                SmsgCon = '<div class="gtalk"><span>'+ data.word +'</span></div>'
+                $msg.html($msg.html() + SmsgCon)
+                data.who = 0
+            },
+            error:function (){
+                alert("请再试一次")
+                console.log("****1111*")
+            }
+        })
+        
+        setTimeout("window.location.href='http://127.0.0.1:5000/'",5000);
+    }
+    $(document).keydown(function(event){
+        if(event.keyCode==13){
+            document.getElementById("click").click();
+        }
+    });
+    $(function(){
+        $("#status1").val(1),
+        $.ajax({
+            url:"http://127.0.0.1:5000/qst",
+            type:"post",
+            dataType:"json",
+            
+            data:JSON.stringify({
+                word: $("#word").val(),
+                who: $("#who").val(),
+                status: $("#status1").val()
+            }),
+            success:function (data){
+                data.who = 1
+                console.log(data)
+                console.log(data.word)
+                data.who = 0
+            },
+            error:function (){
+                alert("请再试一次")
+                console.log("****1111*")
+            }
+        })
+        var $mesType = $('#who'),
+        $text = $('#word'),
+        $send = $('#click'),
+        $msg = $('#words');
+
+        $send.click(function(){
+            
+            var StextCon = $text.val()
+            var SmesType = $mesType.val()
+            var SmsgCon = '';
+
+            if (SmesType == '0'){
+                SmsgCon =  '<div class="utalk"><span>'+ StextCon +'</span></div>'
+            }
+            else if (SmesType == '1'){
+                SmsgCon = '<div class="gtalk"><span>'+ StextCon +'</span></div>'
+            }
+            $msg.html($msg.html() + SmsgCon)
+
+            $("#status2").val(2),
+            $.ajax({
+                url:"http://127.0.0.1:5000/qst",
+                type:"post",
+                dataType:"json",
+                
+                data:JSON.stringify({
+                    word: $("#word").val(),
+                    who: $("#who").val(),
+                    status: $("#status2").val()
+                }),
+                success:function (data){
+                    data.who = 1
+                    console.log(data)
+                    console.log(data.word)
+                    SmsgCon = '<div class="gtalk"><span>'+ data.word +'</span></div>'
+                    $msg.html($msg.html() + SmsgCon)
+                    data.who = 0
+                },
+                error:function (){
+                    alert("请再试一次")
+                    console.log("****1111*")
+                }
+            })
+            
+            $text.val('')
+        })
+    })
+</script>
+
+
+<body class="image">
+    <div class="chat">
+        <span id="status1" value="1"></span>
+        <span id="status2" value="2"></span>
+        <span id="status3" value="3"></span>
+        <span id="title" class="title1">Chat</span>
+        <div class="talk_b" id="words" ref="talk_b">
+                <div class="utalk"><span>你好</span></div>
+                <div class="gtalk"><span>你好</span></div>
+        </div>    
+        <div class="send">
+            <select  type="hidden" name="" id="who" class="wsend">
+                <option value="0">用户</option>
+                <option value="1">GPT</option>
+                <form action="">
+                    <textarea onkeydown="if (event.keyCode === 13) event.preventDefault();" placeholder="输入描述" rows="3" class="text" id="word" required="required"></textarea>
+                    <input type="button" value="发送"  class="btn" id="click" onclick="showtalk()">    
+                    <input type="button" value="结束"  class="btn2" id="click2" onclick="end()">    
+                </form>
+                </select>
+        </div>
+    </div>
+</body>
+</html>
